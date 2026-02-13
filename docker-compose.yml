@@ -1,8 +1,16 @@
 version: "3.4"
+
+networks:
+  k6-net:
+    driver: overlay
+    attachable: true
+
 services:
 
   k6:
     image: loadimpact/k6:latest
+    networks:
+      - k6-net
     volumes:
       - ./load/scripts:/scripts
     working_dir: /scripts
@@ -13,11 +21,11 @@ services:
       - TEST_DURATION=${TEST_DURATION:-30m}
       - RAMP_UP=${RAMP_UP:-2m}
       - RAMP_DOWN=${RAMP_DOWN:-1m}
-    depends_on:
-      - influxdb
 
   influxdb:
     image: influxdb:1.8
+    networks:
+      - k6-net
     ports:
       - "${INFLUXDB_PORT:-7429}:8086"
     environment:
@@ -25,13 +33,13 @@ services:
 
   grafana:
     image: grafana/grafana-enterprise:latest
+    networks:
+      - k6-net
     ports:
       - "${GRAFANA_PORT:-4821}:3000"
     environment:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_BASIC_ENABLED=false
-    depends_on:
-      - influxdb
     volumes:
       - ./load/grafana:/etc/grafana/provisioning/
