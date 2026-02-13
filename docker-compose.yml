@@ -21,14 +21,14 @@ services:
   influxdb:
     image: influxdb:1.8
     ports:
-      - "${INFLUXDB_PORT:-8086}:8086"
+      - "${INFLUXDB_PORT:-7429}:8086"
     environment:
       - INFLUXDB_DB=k6
 
   grafana:
     image: grafana/grafana-enterprise:latest
     ports:
-      - "${GRAFANA_PORT:-3000}:3000"
+      - "${GRAFANA_PORT:-4821}:3000"
     environment:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=true
